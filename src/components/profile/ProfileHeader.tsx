@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
   MessageCircle, Award, Briefcase, UserPlus, Send, Calendar, 
   Mail, MapPin, BookOpen, Code
@@ -89,14 +90,25 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
                   Startup
                 </Badge>
               ) : profile.ambitionScore && (
-                <span className="ambition-score">
-                  <Award size={14} />
-                  {profile.ambitionScore}
-                </span>
+                <div className="flex items-center gap-1 bg-brand-lightPurple text-brand-darkPurple py-1 px-2 rounded-md">
+                  <Award size={14} className="text-brand-purple" />
+                  <span className="font-semibold">{profile.ambitionScore}</span>
+                  <span className="text-xs">/100</span>
+                </div>
               )}
             </div>
             
             <div className="text-muted-foreground">@{profile.username}</div>
+            
+            {profile.ambitionScore && (
+              <div className="mt-2 max-w-xs">
+                <div className="flex items-center justify-between mb-1 text-sm">
+                  <span>Overall Score</span>
+                  <span className="font-semibold">{profile.ambitionScore}/100</span>
+                </div>
+                <Progress value={profile.ambitionScore} className="h-1.5" />
+              </div>
+            )}
             
             <div className="mt-3 max-w-2xl">
               {profile.bio}

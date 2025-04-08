@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
-  Home, Search, MessageCircle, Bell, PlusSquare, UserCircle, 
-  LogOut, Menu, X, Briefcase, Award
+  Home, Search, MessageCircle, PlusSquare, UserCircle, 
+  LogOut, Menu, X, Briefcase, Award, Upload
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -36,10 +36,14 @@ const Sidebar = () => {
       notifications: 3
     },
     { 
-      icon: Bell, 
-      label: "Notifications", 
-      path: "/notifications",
-      notifications: 5
+      icon: Award, 
+      label: "Overall", 
+      path: "/overall" 
+    },
+    { 
+      icon: Upload, 
+      label: "Upload Projects", 
+      path: "/upload-projects" 
     },
     { 
       icon: Briefcase, 

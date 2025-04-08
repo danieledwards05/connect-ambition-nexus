@@ -12,6 +12,8 @@ import CreatePost from "./pages/CreatePost";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
+import Overall from "./pages/Overall";
+import UploadProjects from "./pages/UploadProjects";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +31,8 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/create" element={<CreatePost />} />
           <Route path="/messages" element={<Messages />} />
-          <Route path="/notifications" element={<Feed />} /> {/* Placeholder */}
+          <Route path="/overall" element={<Overall />} /> 
+          <Route path="/upload-projects" element={<UploadProjects />} />
           <Route path="/startups" element={<Feed />} /> {/* Placeholder */}
           <Route path="*" element={<NotFound />} />
         </Routes>
