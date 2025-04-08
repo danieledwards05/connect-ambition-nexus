@@ -6,6 +6,17 @@ import CompleteProfileForm from "@/components/auth/CompleteProfileForm";
 
 const Auth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userData, setUserData] = useState(null);
+  
+  const handleAuthComplete = (userData) => {
+    setUserData(userData);
+    setIsAuthenticated(true);
+  };
+  
+  const handleProfileComplete = (profileData) => {
+    // This is handled inside the CompleteProfileForm
+    // The navigation also happens there
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -51,9 +62,9 @@ const Auth = () => {
         <div className="md:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             {isAuthenticated ? (
-              <CompleteProfileForm />
+              <CompleteProfileForm userData={userData} onComplete={handleProfileComplete} />
             ) : (
-              <AuthForm />
+              <AuthForm onComplete={handleAuthComplete} />
             )}
           </div>
         </div>

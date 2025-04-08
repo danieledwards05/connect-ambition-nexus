@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
 import ProfileHeader, { ProfileData } from "@/components/profile/ProfileHeader";
 import PostCard, { Post } from "@/components/post/PostCard";
@@ -120,23 +119,55 @@ const mockStartupPosts: Post[] = [
 
 const Profile = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
   
   useEffect(() => {
-    // Simulate API fetch based on ID
+    // Get the current user profile from localStorage
+    const currentUserJson = localStorage.getItem('currentUser');
+    const currentUser = currentUserJson ? JSON.parse(currentUserJson) : null;
+    
+    setIsLoading(true);
+    
+    // If no ID is provided, show the current user's profile
+    if (!id && currentUser) {
+      setProfile(currentUser);
+      setPosts(currentUser.isStartup ? mockStartupPosts : mockPosts);
+      setIsCurrentUser(true);
+      setIsLoading(false);
+      return;
+    }
+    
+    // If ID is provided, check if it matches current user
+    if (id && currentUser && currentUser.id === id) {
+      setProfile(currentUser);
+      setPosts(currentUser.isStartup ? mockStartupPosts : mockPosts);
+      setIsCurrentUser(true);
+      setIsLoading(false);
+      return;
+    }
+    
+    // Otherwise, fetch the profile based on the ID
     setTimeout(() => {
       // This is just for demo purposes - in a real app you'd fetch based on ID
       const isStartupProfile = id?.includes("startup");
       setProfile(isStartupProfile ? mockStartupProfile : mockProfileData);
       setPosts(isStartupProfile ? mockStartupPosts : mockPosts);
+      setIsCurrentUser(false);
       setIsLoading(false);
     }, 1000);
   }, [id]);
   
-  // We'll assume this is not the current user for demo purposes
-  const isCurrentUser = false;
+  // If no ID was provided and no current user exists, redirect to auth
+  useEffect(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!id && !currentUser) {
+      navigate('/');
+    }
+  }, [id, navigate]);
   
   return (
     <div className="min-h-screen bg-background flex">
