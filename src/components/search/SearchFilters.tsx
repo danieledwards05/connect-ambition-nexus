@@ -109,14 +109,14 @@ const SearchFilters = ({ onFilterChange }: SearchFiltersProps) => {
           <div className="space-y-1.5">
             <Label htmlFor="industry">Industry</Label>
             <Select
-              value={filters.industry || ""}
-              onValueChange={(value) => handleFilterChange("industry", value || undefined)}
+              value={filters.industry || "any_industry"}
+              onValueChange={(value) => handleFilterChange("industry", value === "any_industry" ? undefined : value)}
             >
               <SelectTrigger id="industry">
                 <SelectValue placeholder="Select Industry" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="">Any Industry</SelectItem>
+                <SelectItem value="any_industry">Any Industry</SelectItem>
                 <SelectItem value="tech">Technology</SelectItem>
                 <SelectItem value="finance">Finance</SelectItem>
                 <SelectItem value="health">Healthcare</SelectItem>
@@ -132,14 +132,14 @@ const SearchFilters = ({ onFilterChange }: SearchFiltersProps) => {
           <div className="space-y-1.5">
             <Label htmlFor="skill">Main Skill</Label>
             <Select
-              value={filters.skill || ""}
-              onValueChange={(value) => handleFilterChange("skill", value || undefined)}
+              value={filters.skill || "any_skill"}
+              onValueChange={(value) => handleFilterChange("skill", value === "any_skill" ? undefined : value)}
             >
               <SelectTrigger id="skill">
                 <SelectValue placeholder="Select Skill" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="">Any Skill</SelectItem>
+                <SelectItem value="any_skill">Any Skill</SelectItem>
                 <SelectItem value="coding">Coding</SelectItem>
                 <SelectItem value="design">Design</SelectItem>
                 <SelectItem value="marketing">Marketing</SelectItem>
