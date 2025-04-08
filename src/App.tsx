@@ -33,7 +33,6 @@ const App = () => (
           <Route path="/messages" element={<Messages />} />
           <Route path="/overall" element={<Overall />} /> 
           <Route path="/upload-projects" element={<UploadProjects />} />
-          <Route path="/startups" element={<Feed />} /> {/* Placeholder */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

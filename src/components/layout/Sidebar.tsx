@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   Home, Search, MessageCircle, PlusSquare, UserCircle, 
-  LogOut, Menu, X, Briefcase, Award, Upload
+  LogOut, Menu, X, Award, Upload
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -44,11 +43,6 @@ const Sidebar = () => {
       icon: Upload, 
       label: "Upload Projects", 
       path: "/upload-projects" 
-    },
-    { 
-      icon: Briefcase, 
-      label: "Startups", 
-      path: "/startups" 
     },
     { 
       icon: UserCircle, 

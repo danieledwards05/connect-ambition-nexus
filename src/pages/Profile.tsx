@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Sidebar from "@/components/layout/Sidebar";
+import Layout from "@/components/layout/Layout";
 import ProfileHeader, { ProfileData } from "@/components/profile/ProfileHeader";
 import PostCard, { Post } from "@/components/post/PostCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -170,77 +170,73 @@ const Profile = () => {
   }, [id, navigate]);
   
   return (
-    <div className="min-h-screen bg-background flex">
-      <Sidebar />
-      
-      <div className="flex-1 pl-16 md:pl-64">
-        <div className="container max-w-5xl mx-auto px-4 py-4">
-          {isLoading ? (
-            <div className="space-y-6">
-              <div className="h-48 bg-muted rounded-t-lg animate-pulse"></div>
-              <div className="h-64 bg-muted rounded-lg animate-pulse"></div>
-            </div>
-          ) : profile ? (
-            <>
-              <ProfileHeader profile={profile} isCurrentUser={isCurrentUser} />
+    <Layout>
+      <div className="container max-w-5xl mx-auto px-4 py-4">
+        {isLoading ? (
+          <div className="space-y-6">
+            <div className="h-48 bg-muted rounded-t-lg animate-pulse"></div>
+            <div className="h-64 bg-muted rounded-lg animate-pulse"></div>
+          </div>
+        ) : profile ? (
+          <>
+            <ProfileHeader profile={profile} isCurrentUser={isCurrentUser} />
+            
+            <Tabs defaultValue="posts" className="mt-6">
+              <TabsList className="w-full">
+                <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
+                {profile.isStartup ? (
+                  <TabsTrigger value="team" className="flex-1">Team</TabsTrigger>
+                ) : (
+                  <TabsTrigger value="projects" className="flex-1">Projects</TabsTrigger>
+                )}
+                {profile.isStartup && (
+                  <TabsTrigger value="roles" className="flex-1">Open Roles</TabsTrigger>
+                )}
+                <TabsTrigger value="about" className="flex-1">About</TabsTrigger>
+              </TabsList>
               
-              <Tabs defaultValue="posts" className="mt-6">
-                <TabsList className="w-full">
-                  <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
-                  {profile.isStartup ? (
-                    <TabsTrigger value="team" className="flex-1">Team</TabsTrigger>
-                  ) : (
-                    <TabsTrigger value="projects" className="flex-1">Projects</TabsTrigger>
-                  )}
-                  {profile.isStartup && (
-                    <TabsTrigger value="roles" className="flex-1">Open Roles</TabsTrigger>
-                  )}
-                  <TabsTrigger value="about" className="flex-1">About</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="posts" className="mt-4">
-                  {posts.length > 0 ? (
-                    posts.map(post => <PostCard key={post.id} post={post} />)
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No posts yet</p>
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="projects" className="mt-4">
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">Projects will be displayed here</p>
+              <TabsContent value="posts" className="mt-4">
+                {posts.length > 0 ? (
+                  posts.map(post => <PostCard key={post.id} post={post} />)
+                ) : (
+                  <div className="text-center py-16">
+                    <p className="text-lg text-muted-foreground">Kinda empty in here</p>
                   </div>
-                </TabsContent>
-                
-                <TabsContent value="team" className="mt-4">
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">Team members will be displayed here</p>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="roles" className="mt-4">
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">Open roles will be displayed here</p>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="about" className="mt-4">
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">Detailed profile information will be displayed here</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Profile not found</p>
-            </div>
-          )}
-        </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="projects" className="mt-4">
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Projects will be displayed here</p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="team" className="mt-4">
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Team members will be displayed here</p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="roles" className="mt-4">
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Open roles will be displayed here</p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="about" className="mt-4">
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Detailed profile information will be displayed here</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Profile not found</p>
+          </div>
+        )}
       </div>
-    </div>
+    </Layout>
   );
 };
 
