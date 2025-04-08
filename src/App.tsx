@@ -9,7 +9,9 @@ import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import CreatePost from "./pages/CreatePost";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +28,7 @@ const App = () => (
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/search" element={<Search />} />
           <Route path="/create" element={<CreatePost />} />
-          <Route path="/messages" element={<Feed />} /> {/* Placeholder */}
+          <Route path="/messages" element={<Messages />} />
           <Route path="/notifications" element={<Feed />} /> {/* Placeholder */}
           <Route path="/startups" element={<Feed />} /> {/* Placeholder */}
           <Route path="*" element={<NotFound />} />
