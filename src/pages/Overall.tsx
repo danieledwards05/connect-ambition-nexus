@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,6 +15,24 @@ const Overall = () => {
   
   // Calculate time contribution to overall score
   const timeContribution = Math.floor(appTime / 10);
+  
+  // Load user data from localStorage to get their ambition score
+  useEffect(() => {
+    const currentUserJson = localStorage.getItem('currentUser');
+    if (currentUserJson) {
+      const currentUser = JSON.parse(currentUserJson);
+      if (currentUser.ambitionScore) {
+        setOverallScore(currentUser.ambitionScore);
+      } else {
+        // If the user doesn't have an ambition score yet, set it in localStorage
+        const updatedUser = {
+          ...currentUser,
+          ambitionScore: overallScore
+        };
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      }
+    }
+  }, []);
   
   // Mock function to handle project upload
   const handleUploadProject = () => {

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ProfileData } from "@/components/profile/ProfileHeader";
 import { Post } from "@/components/post/PostCard";
@@ -51,12 +52,19 @@ export const useProfileData = (id: string | undefined) => {
     
     // Otherwise, fetch the profile based on the ID
     setTimeout(() => {
+      // If the user is viewing someone else's profile but is logged in
+      // We'll still use their score information for consistency
+      const currentUserScore = currentUser?.ambitionScore || 75;
+      
       // This is just for demo purposes - in a real app you'd fetch based on ID
       const isStartupProfile = id?.includes("startup");
       const profileData = isStartupProfile ? mockStartupProfile : mockProfileData;
       
-      // Set the profile data
-      setProfile(profileData);
+      // Set the profile data - ensure it has the same ambitionScore as in Overall
+      setProfile({
+        ...profileData,
+        ambitionScore: currentUserScore
+      });
       
       // Filter posts to only include the ones from this specific profile
       if (isStartupProfile) {
