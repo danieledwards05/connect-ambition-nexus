@@ -24,8 +24,12 @@ export const useProfileData = (id: string | undefined) => {
     // If no ID is provided, show the current user's profile
     if (!id && currentUser) {
       setProfile(currentUser);
-      // Only show the current user's posts
-      setPosts(currentUser.isStartup ? startupPosts : userPosts);
+      // Only show posts where the author ID matches the current user's ID
+      const currentUserPosts = currentUser.isStartup 
+        ? startupPosts.filter(post => post.author.id === currentUser.id)
+        : userPosts.filter(post => post.author.id === currentUser.id);
+      
+      setPosts(currentUserPosts);
       setIsCurrentUser(true);
       setIsLoading(false);
       return;
@@ -34,8 +38,12 @@ export const useProfileData = (id: string | undefined) => {
     // If ID is provided, check if it matches current user
     if (id && currentUser && currentUser.id === id) {
       setProfile(currentUser);
-      // Only show the current user's posts
-      setPosts(currentUser.isStartup ? startupPosts : userPosts);
+      // Only show posts where the author ID matches the current user's ID
+      const currentUserPosts = currentUser.isStartup 
+        ? startupPosts.filter(post => post.author.id === currentUser.id)
+        : userPosts.filter(post => post.author.id === currentUser.id);
+      
+      setPosts(currentUserPosts);
       setIsCurrentUser(true);
       setIsLoading(false);
       return;
@@ -45,17 +53,18 @@ export const useProfileData = (id: string | undefined) => {
     setTimeout(() => {
       // This is just for demo purposes - in a real app you'd fetch based on ID
       const isStartupProfile = id?.includes("startup");
+      const profileData = isStartupProfile ? mockStartupProfile : mockProfileData;
       
       // Set the profile data
-      setProfile(isStartupProfile ? mockStartupProfile : mockProfileData);
+      setProfile(profileData);
       
       // Filter posts to only include the ones from this specific profile
       if (isStartupProfile) {
         // Only show posts made by this startup
-        setPosts(startupPosts.filter(post => post.author.id === "startup1"));
+        setPosts(startupPosts.filter(post => post.author.id === profileData.id));
       } else {
         // Only show posts made by this user
-        setPosts(userPosts.filter(post => post.author.id === "user1"));
+        setPosts(userPosts.filter(post => post.author.id === profileData.id));
       }
       
       setIsCurrentUser(false);
