@@ -60,20 +60,19 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
   };
   
   const handleMessage = () => {
-    // Navigate to messages or open message dialog
     toast.success("Message dialog opened");
   };
   
   return (
-    <Card className="mb-6 overflow-hidden">
+    <Card className="overflow-hidden border-0 shadow-md">
       <div 
-        className="h-48 bg-gradient-to-r from-brand-blue to-brand-purple relative"
+        className="h-40 bg-gradient-to-r from-brand-blue to-brand-purple relative"
         style={profile.coverUrl ? { backgroundImage: `url(${profile.coverUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
       >
         <div className="absolute -bottom-12 left-6">
-          <Avatar className="h-24 w-24 border-4 border-background">
+          <Avatar className="h-20 w-20 border-4 border-background shadow-sm">
             <AvatarImage src={profile.avatarUrl || "/placeholder.svg"} />
-            <AvatarFallback className="text-2xl">
+            <AvatarFallback className="text-xl">
               {profile.name.split(' ').map(n => n[0]).join('')}
             </AvatarFallback>
           </Avatar>
@@ -82,7 +81,7 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
       
       <CardContent className="pt-14">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="max-w-2xl">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{profile.name}</h1>
               {profile.isStartup ? (
@@ -110,54 +109,51 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
               </div>
             )}
             
-            <div className="mt-3 max-w-2xl">
-              {profile.bio}
+            <div className="mt-3 text-sm">
+              {profile.bio || profile.mission}
             </div>
             
-            <div className="flex flex-wrap gap-y-2 mt-3 text-sm text-muted-foreground">
+            <div className="flex flex-wrap gap-2 mt-3 text-xs text-muted-foreground">
               {profile.location && (
-                <div className="flex items-center mr-4">
-                  <MapPin size={14} className="mr-1" />
+                <div className="flex items-center bg-secondary/50 px-2 py-1 rounded-md">
+                  <MapPin size={12} className="mr-1" />
                   {profile.location}
                 </div>
               )}
               
               {profile.email && (
-                <div className="flex items-center mr-4">
-                  <Mail size={14} className="mr-1" />
+                <div className="flex items-center bg-secondary/50 px-2 py-1 rounded-md">
+                  <Mail size={12} className="mr-1" />
                   {profile.email}
                 </div>
               )}
               
-              <div className="flex items-center mr-4">
-                <Calendar size={14} className="mr-1" />
+              <div className="flex items-center bg-secondary/50 px-2 py-1 rounded-md">
+                <Calendar size={12} className="mr-1" />
                 Joined {profile.joinDate}
               </div>
               
               {profile.isStartup ? (
                 <>
                   {profile.industry && (
-                    <div className="flex items-center mr-4">
-                      <Briefcase size={14} className="mr-1" />
+                    <div className="flex items-center bg-secondary/50 px-2 py-1 rounded-md">
+                      <Briefcase size={12} className="mr-1" />
                       {profile.industry}
                     </div>
                   )}
-                  <div className="flex items-center mr-4">
-                    <UserPlus size={14} className="mr-1" />
-                    {profile.isPublic ? "Public" : "Private"}
-                  </div>
                 </>
               ) : (
                 <>
                   {profile.college && (
-                    <div className="flex items-center mr-4">
-                      <BookOpen size={14} className="mr-1" />
-                      {`${profile.college}${profile.year ? ` • ${profile.year}` : ''}`}
+                    <div className="flex items-center bg-secondary/50 px-2 py-1 rounded-md">
+                      <BookOpen size={12} className="mr-1" />
+                      {profile.college}
+                      {profile.year ? ` • ${profile.year}` : ''}
                     </div>
                   )}
                   {profile.major && (
-                    <div className="flex items-center mr-4">
-                      <Code size={14} className="mr-1" />
+                    <div className="flex items-center bg-secondary/50 px-2 py-1 rounded-md">
+                      <Code size={12} className="mr-1" />
                       {profile.major}
                     </div>
                   )}
@@ -166,24 +162,25 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
             </div>
             
             <div className="flex mt-4 gap-x-4">
-              <div>
+              <div className="bg-secondary/50 px-3 py-1 rounded-md">
                 <span className="font-semibold">{profile.followers.toLocaleString()}</span>{" "}
-                <span className="text-muted-foreground">Followers</span>
+                <span className="text-xs text-muted-foreground">Followers</span>
               </div>
-              <div>
+              <div className="bg-secondary/50 px-3 py-1 rounded-md">
                 <span className="font-semibold">{profile.following.toLocaleString()}</span>{" "}
-                <span className="text-muted-foreground">Following</span>
+                <span className="text-xs text-muted-foreground">Following</span>
               </div>
             </div>
           </div>
           
           <div className="flex gap-2">
             {isCurrentUser ? (
-              <Button variant="outline">Edit Profile</Button>
+              <Button variant="outline" size="sm">Edit Profile</Button>
             ) : (
               <>
                 <Button 
                   variant={isFollowing ? "outline" : "default"}
+                  size="sm"
                   onClick={handleFollow}
                 >
                   {isFollowing ? "Following" : "Follow"}
@@ -191,18 +188,20 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
                 
                 <Button 
                   variant="outline"
+                  size="sm"
                   onClick={handleMessage}
                 >
-                  <MessageCircle size={18} className="mr-1" />
+                  <MessageCircle size={16} className="mr-1" />
                   Message
                 </Button>
                 
                 {!profile.isStartup && (
                   <Button 
                     variant="outline"
+                    size="sm"
                     onClick={handleInvite}
                   >
-                    <Send size={18} className="mr-1" />
+                    <Send size={16} className="mr-1" />
                     Invite
                   </Button>
                 )}
@@ -210,19 +209,6 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
             )}
           </div>
         </div>
-        
-        {profile.isStartup && profile.rolesNeeded && profile.rolesNeeded.length > 0 && (
-          <div className="mt-4">
-            <h3 className="font-medium mb-2">Roles Needed:</h3>
-            <div className="flex flex-wrap gap-2">
-              {profile.rolesNeeded.map(role => (
-                <Badge key={role} variant="outline">
-                  {role}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
         
         {profile.tags && profile.tags.length > 0 && (
           <div className="mt-4">

@@ -47,7 +47,7 @@ const mockStartupProfile: ProfileData = {
   tags: ["CleanTech", "Renewable", "IoT", "Sustainability"]
 };
 
-const mockPosts: Post[] = [
+const userPosts: Post[] = [
   {
     id: "1",
     author: {
@@ -83,7 +83,7 @@ const mockPosts: Post[] = [
   }
 ];
 
-const mockStartupPosts: Post[] = [
+const startupPosts: Post[] = [
   {
     id: "2",
     author: {
@@ -135,7 +135,8 @@ const Profile = () => {
     // If no ID is provided, show the current user's profile
     if (!id && currentUser) {
       setProfile(currentUser);
-      setPosts(currentUser.isStartup ? mockStartupPosts : mockPosts);
+      // Only show the current user's posts
+      setPosts(currentUser.isStartup ? startupPosts : userPosts);
       setIsCurrentUser(true);
       setIsLoading(false);
       return;
@@ -144,7 +145,8 @@ const Profile = () => {
     // If ID is provided, check if it matches current user
     if (id && currentUser && currentUser.id === id) {
       setProfile(currentUser);
-      setPosts(currentUser.isStartup ? mockStartupPosts : mockPosts);
+      // Only show the current user's posts
+      setPosts(currentUser.isStartup ? startupPosts : userPosts);
       setIsCurrentUser(true);
       setIsLoading(false);
       return;
@@ -154,8 +156,19 @@ const Profile = () => {
     setTimeout(() => {
       // This is just for demo purposes - in a real app you'd fetch based on ID
       const isStartupProfile = id?.includes("startup");
+      
+      // Set the profile data
       setProfile(isStartupProfile ? mockStartupProfile : mockProfileData);
-      setPosts(isStartupProfile ? mockStartupPosts : mockPosts);
+      
+      // Only show posts made by this user/startup
+      if (isStartupProfile) {
+        // Only show posts made by this startup
+        setPosts(startupPosts);
+      } else {
+        // Only show posts made by this user
+        setPosts(userPosts);
+      }
+      
       setIsCurrentUser(false);
       setIsLoading(false);
     }, 1000);
@@ -171,11 +184,11 @@ const Profile = () => {
   
   return (
     <Layout>
-      <div className="container max-w-5xl mx-auto px-4 py-4">
+      <div className="container max-w-4xl mx-auto px-4 py-4">
         {isLoading ? (
           <div className="space-y-6">
-            <div className="h-48 bg-muted rounded-t-lg animate-pulse"></div>
-            <div className="h-64 bg-muted rounded-lg animate-pulse"></div>
+            <div className="h-40 bg-muted rounded-t-lg animate-pulse"></div>
+            <div className="h-60 bg-muted rounded-lg animate-pulse"></div>
           </div>
         ) : profile ? (
           <>
@@ -206,26 +219,93 @@ const Profile = () => {
               </TabsContent>
               
               <TabsContent value="projects" className="mt-4">
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">Projects will be displayed here</p>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <h3 className="text-xl font-semibold mb-4">Projects</h3>
+                  <p className="text-muted-foreground">Your projects will appear here</p>
                 </div>
               </TabsContent>
               
               <TabsContent value="team" className="mt-4">
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">Team members will be displayed here</p>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <h3 className="text-xl font-semibold mb-4">Team Members</h3>
+                  <p className="text-muted-foreground">Team members will appear here</p>
                 </div>
               </TabsContent>
               
               <TabsContent value="roles" className="mt-4">
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">Open roles will be displayed here</p>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <h3 className="text-xl font-semibold mb-4">Open Positions</h3>
+                  {profile.rolesNeeded && profile.rolesNeeded.length > 0 ? (
+                    <ul className="space-y-2">
+                      {profile.rolesNeeded.map(role => (
+                        <li key={role} className="p-3 bg-background rounded-md border">
+                          {role}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted-foreground">No open positions at the moment</p>
+                  )}
                 </div>
               </TabsContent>
               
               <TabsContent value="about" className="mt-4">
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">Detailed profile information will be displayed here</p>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <h3 className="text-xl font-semibold mb-4">About</h3>
+                  
+                  {profile.isStartup ? (
+                    <div className="space-y-4">
+                      {profile.mission && (
+                        <div>
+                          <h4 className="font-medium text-muted-foreground mb-1">Mission</h4>
+                          <p>{profile.mission}</p>
+                        </div>
+                      )}
+                      
+                      {profile.industry && (
+                        <div>
+                          <h4 className="font-medium text-muted-foreground mb-1">Industry</h4>
+                          <p>{profile.industry}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {profile.bio && (
+                        <div>
+                          <h4 className="font-medium text-muted-foreground mb-1">Bio</h4>
+                          <p>{profile.bio}</p>
+                        </div>
+                      )}
+                      
+                      {profile.college && (
+                        <div>
+                          <h4 className="font-medium text-muted-foreground mb-1">Education</h4>
+                          <p>{profile.college} • {profile.major} • {profile.year}</p>
+                        </div>
+                      )}
+                      
+                      {profile.mainSkill && (
+                        <div>
+                          <h4 className="font-medium text-muted-foreground mb-1">Main Skill</h4>
+                          <p>{profile.mainSkill}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {profile.tags && profile.tags.length > 0 && (
+                    <div className="mt-6">
+                      <h4 className="font-medium text-muted-foreground mb-2">Interests</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {profile.tags.map(tag => (
+                          <span key={tag} className="px-2 py-1 bg-secondary rounded-md text-sm">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>
