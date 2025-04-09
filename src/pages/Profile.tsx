@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -160,13 +161,13 @@ const Profile = () => {
       // Set the profile data
       setProfile(isStartupProfile ? mockStartupProfile : mockProfileData);
       
-      // Only show posts made by this user/startup
+      // Filter posts to only include the ones from this specific profile
       if (isStartupProfile) {
         // Only show posts made by this startup
-        setPosts(startupPosts);
+        setPosts(startupPosts.filter(post => post.author.id === "startup1"));
       } else {
         // Only show posts made by this user
-        setPosts(userPosts);
+        setPosts(userPosts.filter(post => post.author.id === "user1"));
       }
       
       setIsCurrentUser(false);
