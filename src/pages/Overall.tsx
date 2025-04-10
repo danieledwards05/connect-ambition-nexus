@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +10,9 @@ import { toast } from "sonner";
 
 const Overall = () => {
   const [overallScore, setOverallScore] = useState(75);
-  const [appTime, setAppTime] = useState(420); // Mock time in hours
-  const [projectsUploaded, setProjectsUploaded] = useState(3);
-  const [projectsReviewed, setProjectsReviewed] = useState(2);
+  const [appTime, setAppTime] = useState(0); // Start with 0 hours
+  const [projectsUploaded, setProjectsUploaded] = useState(0);
+  const [projectsReviewed, setProjectsReviewed] = useState(0);
   
   // Calculate time contribution to overall score
   const timeContribution = Math.floor(appTime / 10);

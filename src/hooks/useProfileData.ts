@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ProfileData } from "@/components/profile/ProfileHeader";
 import { Post } from "@/components/post/PostCard";
@@ -53,27 +52,21 @@ export const useProfileData = (id: string | undefined) => {
     // Otherwise, fetch the profile based on the ID
     setTimeout(() => {
       // If the user is viewing someone else's profile but is logged in
-      // We'll still use their score information for consistency
-      const currentUserScore = currentUser?.ambitionScore || 75;
+      // Set a default clean profile instead of using mock data with fake numbers
+      const baseProfile = id?.includes("startup") ? mockStartupProfile : mockProfileData;
       
-      // This is just for demo purposes - in a real app you'd fetch based on ID
-      const isStartupProfile = id?.includes("startup");
-      const profileData = isStartupProfile ? mockStartupProfile : mockProfileData;
-      
-      // Set the profile data - ensure it has the same ambitionScore as in Overall
+      // Set the profile data - ensure it has the same ambitionScore as currentUser if available
       setProfile({
-        ...profileData,
-        ambitionScore: currentUserScore
+        ...baseProfile,
+        // Use 0 for all numeric placeholders
+        followers: 0,
+        following: 0,
+        // Preserve ambition score from current user if available
+        ambitionScore: currentUser?.ambitionScore || 75
       });
       
-      // Filter posts to only include the ones from this specific profile
-      if (isStartupProfile) {
-        // Only show posts made by this startup
-        setPosts(startupPosts.filter(post => post.author.id === profileData.id));
-      } else {
-        // Only show posts made by this user
-        setPosts(userPosts.filter(post => post.author.id === profileData.id));
-      }
+      // No posts for non-current users
+      setPosts([]);
       
       setIsCurrentUser(false);
       setIsLoading(false);

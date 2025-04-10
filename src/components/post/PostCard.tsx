@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { 
   Heart, MessageCircle, Share2, Bookmark, 
-  MoreHorizontal, Star, Award
+  MoreHorizontal, Award
 } from "lucide-react";
 
 export interface Post {
@@ -37,7 +37,7 @@ interface PostCardProps {
 const PostCard = ({ post }: PostCardProps) => {
   const [liked, setLiked] = useState(post.isLiked || false);
   const [saved, setSaved] = useState(post.isSaved || false);
-  const [likeCount, setLikeCount] = useState(post.likes);
+  const [likeCount, setLikeCount] = useState(post.likes || 0);
   
   const handleLike = () => {
     if (liked) {
