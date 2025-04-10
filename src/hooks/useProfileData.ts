@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ProfileData } from "@/components/profile/ProfileHeader";
 import { Post } from "@/components/post/PostCard";
@@ -75,3 +76,32 @@ export const useProfileData = (id: string | undefined) => {
   
   return { profile, posts, isLoading, isCurrentUser };
 };
+
+// Function to join a startup - would normally be part of a context or service
+export const joinStartup = (startupId: string, startupName: string) => {
+  // Get current user's joined startups from localStorage or create empty array
+  const joinedStartupsJson = localStorage.getItem('joinedStartups');
+  const joinedStartups = joinedStartupsJson ? JSON.parse(joinedStartupsJson) : [];
+  
+  // Add this startup if not already joined
+  if (!joinedStartups.some((startup: any) => startup.id === startupId)) {
+    joinedStartups.push({
+      id: startupId,
+      name: startupName,
+      joinedAt: new Date().toISOString()
+    });
+    
+    // Save back to localStorage
+    localStorage.setItem('joinedStartups', JSON.stringify(joinedStartups));
+    return true;
+  }
+  
+  return false;
+};
+
+// Function to get all startups the user has joined
+export const getJoinedStartups = () => {
+  const joinedStartupsJson = localStorage.getItem('joinedStartups');
+  return joinedStartupsJson ? JSON.parse(joinedStartupsJson) : [];
+};
+

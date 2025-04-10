@@ -4,12 +4,23 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MessageList from "@/components/messages/MessageList";
 import MessageConversation from "@/components/messages/MessageConversation";
-import { MessageCircle, Users } from "lucide-react";
+import StartupInvitations from "@/components/messages/StartupInvitations";
+import { MessageCircle, Users, BellRing } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 
 const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("direct");
+  
+  // Get current user data from localStorage
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  
+  useEffect(() => {
+    const userJson = localStorage.getItem('currentUser');
+    if (userJson) {
+      setCurrentUser(JSON.parse(userJson));
+    }
+  }, []);
   
   // Mock data for development - would be fetched from API in real app
   const userChats = [
@@ -22,11 +33,19 @@ const Messages = () => {
     { id: "startup2", name: "FinEdge", avatar: "/placeholder.svg", lastMessage: "We need to update the roadmap", time: "2d ago", members: 3, unread: false },
   ];
 
+  // Mock startup invitations
+  const startupInvitations = [
+    { id: "startup3", name: "CodeCraft", avatar: "/placeholder.svg", time: "1d ago", description: "A modern software development studio" },
+    { id: "startup4", name: "DataVision", avatar: "/placeholder.svg", time: "3d ago", description: "AI-powered data analytics platform" },
+  ];
+
   return (
     <Layout>
       <div className="container px-4 py-6 mx-auto max-w-6xl">
         <div className="flex flex-col h-[calc(100vh-10rem)]">
-          <h1 className="text-2xl font-bold mb-4">Messages</h1>
+          <h1 className="text-2xl font-bold mb-4">
+            {currentUser?.name ? `${currentUser.name}'s Messages` : 'Messages'}
+          </h1>
           
           <Card className="flex flex-col h-full overflow-hidden">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
@@ -37,6 +56,9 @@ const Messages = () => {
                   </TabsTrigger>
                   <TabsTrigger value="startups" className="flex items-center gap-2">
                     <Users size={16} /> Startup Chats
+                  </TabsTrigger>
+                  <TabsTrigger value="invitations" className="flex items-center gap-2">
+                    <BellRing size={16} /> Invitations
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -59,17 +81,24 @@ const Messages = () => {
                       type="startup"
                     />
                   </TabsContent>
+                  <TabsContent value="invitations" className="m-0 h-full">
+                    <StartupInvitations 
+                      invitations={startupInvitations}
+                    />
+                  </TabsContent>
                 </div>
                 
                 <div className="w-2/3 flex flex-col">
-                  {selectedChat ? (
+                  {selectedChat && (activeTab === "direct" || activeTab === "startups") ? (
                     <MessageConversation 
                       chatId={selectedChat} 
                       chatType={activeTab}
                     />
                   ) : (
                     <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                      Select a conversation to start messaging
+                      {activeTab === "invitations" 
+                        ? "Select a startup invitation to respond" 
+                        : "Select a conversation to start messaging"}
                     </div>
                   )}
                 </div>

@@ -51,3 +51,4 @@ export const userPosts: Post[] = [
 export const startupPosts: Post[] = [
   // Empty array - we'll only show posts created by the current user/startup
 ];
+
