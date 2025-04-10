@@ -1,14 +1,11 @@
+
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
-import PostCard, { Post } from "@/components/post/PostCard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
-import { Image, Search, TrendingUp } from "lucide-react";
+import { Post } from "@/components/post/PostCard";
+import CreatePostCard from "@/components/feed/CreatePostCard";
+import PostList from "@/components/feed/PostList";
+import FeedTabs from "@/components/feed/FeedTabs";
+import RightSidebar from "@/components/feed/RightSidebar";
 
 const mockPosts: Post[] = [
   {
@@ -111,19 +108,6 @@ const suggestedStartups = [
 ];
 
 const Feed = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  useEffect(() => {
-    // Simulate data loading
-    const timer = setTimeout(() => {
-      setPosts(mockPosts);
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
   return (
     <div className="min-h-screen bg-background flex">
       <Sidebar />
@@ -132,154 +116,16 @@ const Feed = () => {
         <div className="container max-w-6xl mx-auto px-4 pb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
-              <div className="mb-4">
-                <Tabs defaultValue="feed">
-                  <TabsList className="w-full">
-                    <TabsTrigger value="feed" className="flex-1">For You</TabsTrigger>
-                    <TabsTrigger value="following" className="flex-1">Following</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-              
-              <Card className="mb-6">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <Link to="/create">
-                        <Input 
-                          placeholder="Share an update or achievement..." 
-                          className="bg-muted/50 cursor-pointer"
-                          readOnly
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="flex mt-4 justify-between">
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link to="/create" className="flex items-center gap-1">
-                        <Image size={18} />
-                        <span>Media</span>
-                      </Link>
-                    </Button>
-                    <Button asChild>
-                      <Link to="/create">Create Post</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              {isLoading ? (
-                // Skeleton loader for posts
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <Card key={i} className="animate-pulse">
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-full bg-muted"></div>
-                          <div className="flex-1 space-y-3">
-                            <div className="h-4 bg-muted rounded w-1/3"></div>
-                            <div className="h-3 bg-muted rounded w-1/4"></div>
-                            <div className="h-20 bg-muted rounded w-full"></div>
-                            <div className="flex gap-2">
-                              <div className="h-8 bg-muted rounded w-20"></div>
-                              <div className="h-8 bg-muted rounded w-20"></div>
-                              <div className="h-8 bg-muted rounded w-20"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                posts.map(post => <PostCard key={post.id} post={post} />)
-              )}
+              <FeedTabs>
+                <CreatePostCard />
+                <PostList initialPosts={mockPosts} />
+              </FeedTabs>
             </div>
             
-            <div className="hidden md:block">
-              <div className="sticky top-4 space-y-6">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">Search</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="search"
-                        placeholder="Search people or startups..."
-                        className="pl-8"
-                      />
-                    </div>
-                    <Button asChild className="w-full mt-2">
-                      <Link to="/search">Advanced Search</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">Trending Topics</CardTitle>
-                      <TrendingUp size={18} className="text-muted-foreground" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {trendingTopics.map((topic) => (
-                        <li key={topic.name} className="flex items-center justify-between">
-                          <Badge variant="secondary" className="hover:bg-secondary/80">
-                            #{topic.name}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{topic.count} posts</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Suggested Startups</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-4">
-                      {suggestedStartups.map((startup) => (
-                        <li key={startup.id} className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage src={startup.avatarUrl} />
-                            <AvatarFallback>
-                              {startup.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <Link 
-                              to={`/profile/${startup.id}`}
-                              className="font-medium text-sm hover:underline block truncate"
-                            >
-                              {startup.name}
-                            </Link>
-                            <span className="text-xs text-muted-foreground block truncate">
-                              {startup.industry} • {startup.isPublic ? "Public" : "Private"}
-                            </span>
-                          </div>
-                          <Button size="sm" variant="outline">Follow</Button>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button variant="ghost" size="sm" className="w-full mt-3">
-                      See More
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+            <RightSidebar 
+              trendingTopics={trendingTopics} 
+              suggestedStartups={suggestedStartups} 
+            />
           </div>
         </div>
       </div>
