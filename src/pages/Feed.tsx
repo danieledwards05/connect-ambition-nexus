@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import PostCard, { Post } from "@/components/post/PostCard";
@@ -138,7 +137,6 @@ const Feed = () => {
                   <TabsList className="w-full">
                     <TabsTrigger value="feed" className="flex-1">For You</TabsTrigger>
                     <TabsTrigger value="following" className="flex-1">Following</TabsTrigger>
-                    <TabsTrigger value="startups" className="flex-1">Startups</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
