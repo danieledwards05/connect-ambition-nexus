@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -106,19 +107,6 @@ const Sidebar = () => {
         </div>
         
         <div className="mt-auto">
-          {!collapsed && (
-            <div className="flex items-center gap-2 px-2 mb-4">
-              <Avatar>
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="font-medium text-sm">John Doe</span>
-                <span className="text-xs text-muted-foreground">@johndoe</span>
-              </div>
-            </div>
-          )}
-          
           <TooltipProvider delayDuration={collapsed ? 300 : 10000}>
             <Tooltip>
               <TooltipTrigger asChild>
