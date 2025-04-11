@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ interface SearchResultsProps {
 
 const SearchResults = ({ results, isLoading }: SearchResultsProps) => {
   const [vettingProfile, setVettingProfile] = useState<ProfileData | null>(null);
+  const navigate = useNavigate();
   
   const handleInvite = (profile: ProfileData) => {
     toast.success(`Invitation sent to ${profile.name}`);
@@ -36,7 +37,29 @@ const SearchResults = ({ results, isLoading }: SearchResultsProps) => {
   };
   
   const handleMessage = (profile: ProfileData) => {
-    toast.success(`Opening messages with ${profile.name}`);
+    // Store the chat in localStorage for persistence across page refreshes
+    const existingChats = JSON.parse(localStorage.getItem('directChats') || '[]');
+    
+    // Check if a chat with this user already exists
+    const existingChatIndex = existingChats.findIndex((chat: any) => chat.id === profile.id);
+    
+    if (existingChatIndex === -1) {
+      // Create a new chat if one doesn't exist
+      const newChat = {
+        id: profile.id,
+        name: profile.name,
+        avatar: profile.avatarUrl || "/placeholder.svg",
+        lastMessage: "Start a conversation...",
+        time: "Just now",
+        unread: false
+      };
+      
+      existingChats.unshift(newChat); // Add to the beginning of the array
+      localStorage.setItem('directChats', JSON.stringify(existingChats));
+    }
+    
+    // Navigate to messages with this chat selected
+    navigate(`/messages?type=direct&id=${profile.id}`);
   };
   
   if (isLoading) {

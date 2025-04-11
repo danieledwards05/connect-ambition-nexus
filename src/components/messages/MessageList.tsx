@@ -2,6 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Users } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type Chat = {
   id: string;
@@ -20,7 +21,24 @@ interface MessageListProps {
   type: 'direct' | 'startup';
 }
 
-const MessageList = ({ chats, selectedChatId, onSelectChat, type }: MessageListProps) => {
+const MessageList = ({ chats: propChats, selectedChatId, onSelectChat, type }: MessageListProps) => {
+  const [chats, setChats] = useState<Chat[]>(propChats);
+  
+  useEffect(() => {
+    // If this is a direct message list, check localStorage for additional chats
+    if (type === 'direct') {
+      const storedChats = JSON.parse(localStorage.getItem('directChats') || '[]');
+      
+      // Merge stored chats with prop chats, avoiding duplicates
+      const existingIds = new Set(propChats.map(chat => chat.id));
+      const newChats = storedChats.filter((chat: Chat) => !existingIds.has(chat.id));
+      
+      setChats([...propChats, ...newChats]);
+    } else {
+      setChats(propChats);
+    }
+  }, [propChats, type]);
+  
   if (chats.length === 0) {
     return (
       <div className="p-4 text-center text-muted-foreground">

@@ -7,10 +7,13 @@ import MessageConversation from "@/components/messages/MessageConversation";
 import StartupInvitations from "@/components/messages/StartupInvitations";
 import { MessageCircle, Users, BellRing } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("direct");
+  const location = useLocation();
+  const navigate = useNavigate();
   
   // Get current user data from localStorage
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -21,6 +24,32 @@ const Messages = () => {
       setCurrentUser(JSON.parse(userJson));
     }
   }, []);
+  
+  // Parse query parameters on component mount and when location changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const typeParam = params.get('type');
+    const idParam = params.get('id');
+    
+    if (typeParam && (typeParam === 'direct' || typeParam === 'startups' || typeParam === 'invitations')) {
+      setActiveTab(typeParam);
+    }
+    
+    if (idParam) {
+      setSelectedChat(idParam);
+    }
+  }, [location]);
+  
+  // Update URL when tab or selected chat changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+    params.set('type', activeTab);
+    if (selectedChat) {
+      params.set('id', selectedChat);
+    }
+    
+    navigate(`/messages?${params.toString()}`, { replace: true });
+  }, [activeTab, selectedChat, navigate]);
   
   // Mock data for development - would be fetched from API in real app
   const userChats = [

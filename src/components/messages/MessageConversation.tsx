@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SendHorizontal, Users } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface MessageConversationProps {
   chatId: string;
@@ -21,49 +22,108 @@ type Message = {
 
 const MessageConversation = ({ chatId, chatType }: MessageConversationProps) => {
   const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [chatDetails, setChatDetails] = useState<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Mock data for development - would be fetched from API in real app
-  const chatDetails = {
-    id: chatId,
-    name: chatType === 'startups' ? "TechNova" : "Jane Smith",
-    avatar: "/placeholder.svg",
-    members: chatType === 'startups' ? 5 : undefined,
+  // Get current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  
+  useEffect(() => {
+    // Scroll to bottom when messages change
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+  
+  useEffect(() => {
+    // Load chat details and messages for this conversation
+    if (chatType === 'direct') {
+      const directChats = JSON.parse(localStorage.getItem('directChats') || '[]');
+      const chatData = directChats.find((chat: any) => chat.id === chatId);
+      
+      if (chatData) {
+        setChatDetails(chatData);
+        
+        // Load or initialize messages for this chat
+        const chatMessages = JSON.parse(localStorage.getItem(`messages_${chatId}`) || '[]');
+        setMessages(chatMessages);
+      } else {
+        // If we don't have details (unlikely but possible), initialize with defaults
+        setChatDetails({
+          id: chatId,
+          name: "User",
+          avatar: "/placeholder.svg",
+        });
+        setMessages([]);
+      }
+    } else if (chatType === 'startups') {
+      // For startup chats, use the mock data for now
+      setChatDetails({
+        id: chatId,
+        name: chatId === "startup1" ? "TechNova" : "FinEdge",
+        avatar: "/placeholder.svg",
+        members: chatId === "startup1" ? 5 : 3,
+      });
+      
+      // Initialize with mock messages
+      setMessages([
+        {
+          id: "msg1",
+          sender: chatId === "startup1" ? "TechNova Admin" : "FinEdge Admin",
+          senderId: "admin",
+          content: "Welcome to the team chat!",
+          timestamp: "Yesterday at 2:30 PM",
+          avatar: "/placeholder.svg",
+          isCurrentUser: false,
+        }
+      ]);
+    }
+  }, [chatId, chatType]);
+  
+  const formatTimestamp = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    return `Today at ${formattedHours}:${formattedMinutes} ${ampm}`;
   };
-  
-  const messages: Message[] = [
-    {
-      id: "msg1",
-      sender: "Jane Smith",
-      senderId: "user1",
-      content: "Hey there! How's the project coming along?",
-      timestamp: "Yesterday at 2:30 PM",
-      avatar: "/placeholder.svg",
-      isCurrentUser: false,
-    },
-    {
-      id: "msg2",
-      sender: "You",
-      senderId: "currentUser",
-      content: "It's going well! I've completed the UI design for the dashboard.",
-      timestamp: "Yesterday at 2:45 PM",
-      avatar: "/placeholder.svg",
-      isCurrentUser: true,
-    },
-    {
-      id: "msg3",
-      sender: "Jane Smith",
-      senderId: "user1",
-      content: "That's great to hear! Can you share the mockups with the team?",
-      timestamp: "Yesterday at 3:00 PM",
-      avatar: "/placeholder.svg",
-      isCurrentUser: false,
-    },
-  ];
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      // In a real app, would send to backend API
-      console.log("Sending message:", newMessage);
+      const newMessageObj: Message = {
+        id: `msg_${Date.now()}`,
+        sender: currentUser.name || "You",
+        senderId: currentUser.id || "currentUser",
+        content: newMessage.trim(),
+        timestamp: formatTimestamp(),
+        avatar: currentUser.avatarUrl || "/placeholder.svg",
+        isCurrentUser: true,
+      };
+      
+      const updatedMessages = [...messages, newMessageObj];
+      setMessages(updatedMessages);
+      
+      // Update localStorage for persistence
+      if (chatType === 'direct') {
+        localStorage.setItem(`messages_${chatId}`, JSON.stringify(updatedMessages));
+        
+        // Update last message in chats list
+        const directChats = JSON.parse(localStorage.getItem('directChats') || '[]');
+        const updatedChats = directChats.map((chat: any) => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              lastMessage: newMessage.trim(),
+              time: 'Just now'
+            };
+          }
+          return chat;
+        });
+        
+        localStorage.setItem('directChats', JSON.stringify(updatedChats));
+      }
+      
       setNewMessage("");
     }
   };
@@ -74,6 +134,10 @@ const MessageConversation = ({ chatId, chatType }: MessageConversationProps) => 
       handleSendMessage();
     }
   };
+
+  if (!chatDetails) {
+    return <div className="flex items-center justify-center h-full text-muted-foreground">Loading conversation...</div>;
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -98,41 +162,48 @@ const MessageConversation = ({ chatId, chatType }: MessageConversationProps) => 
       
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div 
-            key={message.id} 
-            className={`flex ${message.isCurrentUser ? "justify-end" : "justify-start"}`}
-          >
-            <div className={`flex ${message.isCurrentUser ? "flex-row-reverse" : "flex-row"} gap-2 max-w-[80%]`}>
-              {!message.isCurrentUser && (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={message.avatar} alt={message.sender} />
-                  <AvatarFallback>{message.sender.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-              )}
-              <div>
-                <div className={`flex ${message.isCurrentUser ? "justify-end" : "justify-start"} items-center gap-2`}>
-                  {!message.isCurrentUser && <span className="text-sm font-medium">{message.sender}</span>}
-                  <span className="text-xs text-muted-foreground">{message.timestamp}</span>
-                </div>
-                <div className={`mt-1 p-3 rounded-lg ${
-                  message.isCurrentUser 
-                    ? "bg-brand-purple text-white rounded-tr-none" 
-                    : "bg-muted rounded-tl-none"
-                }`}>
-                  {message.content}
+        {messages.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            No messages yet. Start a conversation!
+          </div>
+        ) : (
+          messages.map((message) => (
+            <div 
+              key={message.id} 
+              className={`flex ${message.isCurrentUser ? "justify-end" : "justify-start"}`}
+            >
+              <div className={`flex ${message.isCurrentUser ? "flex-row-reverse" : "flex-row"} gap-2 max-w-[80%]`}>
+                {!message.isCurrentUser && (
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={message.avatar} alt={message.sender} />
+                    <AvatarFallback>{message.sender.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                )}
+                <div>
+                  <div className={`flex ${message.isCurrentUser ? "justify-end" : "justify-start"} items-center gap-2`}>
+                    {!message.isCurrentUser && <span className="text-sm font-medium">{message.sender}</span>}
+                    <span className="text-xs text-muted-foreground">{message.timestamp}</span>
+                  </div>
+                  <div className={`mt-1 p-3 rounded-lg ${
+                    message.isCurrentUser 
+                      ? "bg-brand-purple text-white rounded-tr-none" 
+                      : "bg-muted rounded-tl-none"
+                  }`}>
+                    {message.content}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
+        <div ref={messagesEndRef} />
       </div>
       
       {/* Message input */}
       <div className="border-t p-4">
         <div className="flex gap-2">
-          <textarea
-            className="flex-1 min-h-[2.5rem] max-h-32 px-3 py-2 resize-none rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          <Textarea
+            className="flex-1 min-h-[2.5rem] max-h-32 px-3 py-2 resize-none"
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
