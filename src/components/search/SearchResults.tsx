@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Award, MessageCircle, Send, Briefcase, UserPlus } from "lucide-react";
 import { ProfileData } from "../profile/ProfileHeader";
 import { toast } from "sonner";
+import StartupVettingDialog from "./StartupVettingDialog";
 
 interface SearchResultsProps {
   results: ProfileData[];
@@ -14,6 +16,8 @@ interface SearchResultsProps {
 }
 
 const SearchResults = ({ results, isLoading }: SearchResultsProps) => {
+  const [vettingProfile, setVettingProfile] = useState<ProfileData | null>(null);
+  
   const handleInvite = (profile: ProfileData) => {
     toast.success(`Invitation sent to ${profile.name}`);
   };
@@ -22,8 +26,13 @@ const SearchResults = ({ results, isLoading }: SearchResultsProps) => {
     if (profile.isPublic) {
       toast.success(`You have joined ${profile.name}`);
     } else {
-      toast.success(`Request sent to join ${profile.name}`);
+      // For private startups, open the vetting dialog
+      setVettingProfile(profile);
     }
+  };
+  
+  const handleVettingComplete = (profile: ProfileData) => {
+    toast.success(`Request sent to join ${profile.name}`);
   };
   
   const handleMessage = (profile: ProfileData) => {
@@ -172,6 +181,15 @@ const SearchResults = ({ results, isLoading }: SearchResultsProps) => {
           </CardContent>
         </Card>
       ))}
+      
+      {vettingProfile && (
+        <StartupVettingDialog
+          isOpen={!!vettingProfile}
+          onClose={() => setVettingProfile(null)}
+          profile={vettingProfile}
+          onSubmit={handleVettingComplete}
+        />
+      )}
     </div>
   );
 };
