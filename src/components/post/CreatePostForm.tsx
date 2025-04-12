@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,9 @@ const CreatePostForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -27,6 +30,13 @@ const CreatePostForm = () => {
         }
       };
       reader.readAsDataURL(file);
+    }
+  };
+  
+  const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setAttachments(prev => [...prev, ...filesArray]);
     }
   };
   
@@ -46,6 +56,13 @@ const CreatePostForm = () => {
   
   const removeImage = () => {
     setImagePreview(null);
+    if (imageInputRef.current) {
+      imageInputRef.current.value = '';
+    }
+  };
+  
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
   };
   
   const handleSubmit = () => {
@@ -101,6 +118,36 @@ const CreatePostForm = () => {
               </div>
             )}
             
+            {attachments.length > 0 && (
+              <div className="mb-3">
+                <h4 className="text-sm font-medium mb-1">Attachments</h4>
+                <div className="space-y-1">
+                  {attachments.map((file, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center justify-between p-2 rounded bg-muted"
+                    >
+                      <div className="flex items-center gap-2 text-sm">
+                        <Paperclip size={14} />
+                        <span>{file.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          ({(file.size / 1024).toFixed(0)} KB)
+                        </span>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 w-6 p-0" 
+                        onClick={() => removeAttachment(index)}
+                      >
+                        <X size={14} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-3">
                 {tags.map(tag => (
@@ -124,21 +171,32 @@ const CreatePostForm = () => {
             
             <div className="flex items-center gap-2">
               <div className="relative">
-                <Button variant="ghost" size="icon" className="text-muted-foreground" asChild>
-                  <label htmlFor="image-upload">
-                    <Image size={18} />
-                    <Input 
-                      id="image-upload" 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </label>
+                <Button variant="ghost" size="icon" className="text-muted-foreground" type="button" onClick={() => imageInputRef.current?.click()}>
+                  <Image size={18} />
                 </Button>
+                <Input 
+                  ref={imageInputRef}
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
               </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-muted-foreground" 
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Paperclip size={18} />
+                <Input 
+                  ref={fileInputRef}
+                  type="file" 
+                  className="hidden" 
+                  multiple
+                  onChange={handleAttachmentChange}
+                />
               </Button>
               <div className="relative flex-1">
                 <div className="flex items-center border rounded-md pl-2">

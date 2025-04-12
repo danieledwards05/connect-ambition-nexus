@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,11 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, FileText, Award, Plus } from "lucide-react";
+import { Upload, FileText, Award, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 const UploadProjects = () => {
   const [uploading, setUploading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +23,23 @@ const UploadProjects = () => {
     setTimeout(() => {
       setUploading(false);
       toast.success("Project uploaded successfully! Your Overall Score will be updated after review.");
+      setSelectedFiles([]);
     }, 1500);
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setSelectedFiles(prev => [...prev, ...filesArray]);
+    }
+  };
+  
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click();
   };
   
   return (
@@ -123,10 +141,46 @@ const UploadProjects = () => {
                     <p className="text-xs text-muted-foreground mb-4">
                       You can upload multiple files (PDF, images, ZIP, code files)
                     </p>
-                    <Button type="button" variant="outline" size="sm">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      className="hidden"
+                      multiple
+                    />
+                    <Button type="button" variant="outline" size="sm" onClick={handleBrowseClick}>
                       Browse Files
                     </Button>
                   </div>
+                  
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <Label>Selected Files</Label>
+                      <div className="border rounded-lg p-4">
+                        <ul className="space-y-2">
+                          {selectedFiles.map((file, index) => (
+                            <li key={index} className="flex items-center justify-between bg-muted p-2 rounded">
+                              <div className="flex items-center">
+                                <FileText size={16} className="mr-2" />
+                                <span className="text-sm truncate max-w-xs">{file.name}</span>
+                                <span className="text-xs text-muted-foreground ml-2">
+                                  ({(file.size / 1024).toFixed(0)} KB)
+                                </span>
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => removeFile(index)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <X size={14} />
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
