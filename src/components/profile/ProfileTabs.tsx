@@ -1,5 +1,3 @@
-
-import { ProfileData } from "@/components/profile/ProfileHeader";
 import { Post } from "@/components/post/PostCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PostCard from "@/components/post/PostCard";
@@ -7,6 +5,7 @@ import ProjectCard, { Project } from "@/components/profile/ProjectCard";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { ProfileData } from "@/components/profile/ProfileHeader.types";
 
 interface ProfileTabsProps {
   profile: ProfileData;

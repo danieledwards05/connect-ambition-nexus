@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { ProfileData } from "@/components/profile/ProfileHeader";
+import { ProfileData } from "@/components/profile/ProfileHeader.types";
 import { Post } from "@/components/post/PostCard";
 import { 
   mockProfileData, 
@@ -104,4 +103,3 @@ export const getJoinedStartups = () => {
   const joinedStartupsJson = localStorage.getItem('joinedStartups');
   return joinedStartupsJson ? JSON.parse(joinedStartupsJson) : [];
 };
-
