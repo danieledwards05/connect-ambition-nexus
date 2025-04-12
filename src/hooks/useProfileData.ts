@@ -62,8 +62,8 @@ export const useProfileData = (id: string | undefined) => {
         // Use 0 for all numeric placeholders
         followers: 0,
         following: 0,
-        // Preserve ambition score from current user if available
-        ambitionScore: currentUser?.ambitionScore || 75
+        // Use currentUser's ambitionScore or fallback to 0 (not 75 as before)
+        ambitionScore: currentUser?.ambitionScore || 0
       });
       
       // No posts for non-current users

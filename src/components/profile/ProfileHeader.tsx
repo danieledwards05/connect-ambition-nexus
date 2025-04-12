@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,6 +47,14 @@ interface ProfileHeaderProps {
 const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
   
+  // Get the current user's ambition score for consistency
+  const currentUserJson = localStorage.getItem('currentUser');
+  const currentUser = currentUserJson ? JSON.parse(currentUserJson) : null;
+  
+  // Use the profile's ambition score, but ensure it's consistent with currentUser for the logged-in user
+  const ambitionScore = isCurrentUser && currentUser ? 
+    currentUser.ambitionScore : profile.ambitionScore || 0;
+  
   const handleFollow = () => {
     setIsFollowing(!isFollowing);
     if (!isFollowing) {
@@ -88,10 +95,10 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
                 <Badge variant="outline" className="bg-brand-lightPurple text-brand-darkPurple">
                   Startup
                 </Badge>
-              ) : profile.ambitionScore && (
+              ) : (
                 <div className="flex items-center gap-1 bg-brand-lightPurple text-brand-darkPurple py-1 px-2 rounded-md">
                   <Award size={14} className="text-brand-purple" />
-                  <span className="font-semibold">{profile.ambitionScore}</span>
+                  <span className="font-semibold">{ambitionScore}</span>
                   <span className="text-xs">/100</span>
                 </div>
               )}
@@ -99,13 +106,13 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
             
             <div className="text-muted-foreground">@{profile.username}</div>
             
-            {profile.ambitionScore && (
+            {!profile.isStartup && (
               <div className="mt-2 max-w-xs">
                 <div className="flex items-center justify-between mb-1 text-sm">
                   <span>Overall Score</span>
-                  <span className="font-semibold">{profile.ambitionScore}/100</span>
+                  <span className="font-semibold">{ambitionScore}/100</span>
                 </div>
-                <Progress value={profile.ambitionScore} className="h-1.5" />
+                <Progress value={ambitionScore} className="h-1.5" />
               </div>
             )}
             
