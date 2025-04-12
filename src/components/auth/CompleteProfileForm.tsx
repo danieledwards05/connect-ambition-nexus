@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -328,7 +327,7 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
       joinDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       followers: 0,
       following: 0,
-      ambitionScore: 10,
+      ambitionScore: 0,  // Changed from 10 to 0
       college: data.college,
       major: data.major,
       year: data.year,
@@ -350,7 +349,7 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
       .split(',')
       .map(role => role.trim())
       .filter(role => role.length > 0);
-      
+    
     const profileData = {
       ...userData,
       id: `startup-${Date.now()}`,
@@ -364,6 +363,7 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
       joinDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       followers: 0,
       following: 0,
+      ambitionScore: 0,  // Changed from not being set to 0
       industry: data.industry,
       isPublic: data.status === 'public',
       rolesNeeded: rolesArray,

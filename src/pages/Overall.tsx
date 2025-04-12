@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const Overall = () => {
-  const [overallScore, setOverallScore] = useState(75);
-  const [appTime, setAppTime] = useState(0); // Start with 0 hours
+  const [overallScore, setOverallScore] = useState(0);  // Changed from 75 to 0
+  const [appTime, setAppTime] = useState(0); 
   const [projectsUploaded, setProjectsUploaded] = useState(0);
   const [projectsReviewed, setProjectsReviewed] = useState(0);
   
