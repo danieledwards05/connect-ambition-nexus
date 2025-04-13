@@ -97,6 +97,7 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
           
           <ProfileActions 
             profileName={profile.name}
+            profileId={profile.id} // Added the missing profileId prop
             isCurrentUser={isCurrentUser} 
             isStartup={profile.isStartup} 
           />
