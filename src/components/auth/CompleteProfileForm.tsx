@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -312,6 +313,23 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
   const navigate = useNavigate();
   const [profileType, setProfileType] = useState(userData?.accountType || 'personal');
   
+  // Function to save user to registered users
+  const saveUserToRegisteredUsers = (profileData) => {
+    // Get existing registered users or initialize empty array
+    const existingUsersJson = localStorage.getItem('registeredUsers');
+    const existingUsers = existingUsersJson ? JSON.parse(existingUsersJson) : [];
+    
+    // Check if user with this email already exists
+    const userExists = existingUsers.some(user => user.email === profileData.email);
+    
+    if (!userExists) {
+      // Add new user to the array
+      existingUsers.push(profileData);
+      // Save updated array back to localStorage
+      localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+    }
+  };
+  
   const handleCompletePersonalProfile = (data: PersonalProfileFormData) => {
     // Create the user profile data
     const profileData = {
@@ -327,7 +345,7 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
       joinDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       followers: 0,
       following: 0,
-      ambitionScore: 0,  // Changed from 10 to 0
+      ambitionScore: 0,
       college: data.college,
       major: data.major,
       year: data.year,
@@ -337,6 +355,9 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
     
     // Save to localStorage
     localStorage.setItem('currentUser', JSON.stringify(profileData));
+    
+    // Save to registeredUsers
+    saveUserToRegisteredUsers(profileData);
     
     toast.success("Profile completed successfully!");
     if (onComplete) onComplete(profileData);
@@ -363,7 +384,7 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
       joinDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       followers: 0,
       following: 0,
-      ambitionScore: 0,  // Changed from not being set to 0
+      ambitionScore: 0,
       industry: data.industry,
       isPublic: data.status === 'public',
       rolesNeeded: rolesArray,
@@ -372,6 +393,9 @@ const CompleteProfileForm = ({ userData, onComplete }) => {
     
     // Save to localStorage
     localStorage.setItem('currentUser', JSON.stringify(profileData));
+    
+    // Save to registeredUsers
+    saveUserToRegisteredUsers(profileData);
     
     toast.success("Profile completed successfully!");
     if (onComplete) onComplete(profileData);

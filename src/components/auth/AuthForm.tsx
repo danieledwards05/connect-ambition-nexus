@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -50,21 +49,24 @@ const AuthForm = ({ onComplete }: AuthFormProps) => {
   const handleLogin = (data: LoginFormData) => {
     setIsLoading(true);
     
-    // Try to get saved user data
-    const savedUser = localStorage.getItem('currentUser');
+    // Try to get all registered users
+    const allUsersJson = localStorage.getItem('registeredUsers');
+    const allUsers = allUsersJson ? JSON.parse(allUsersJson) : [];
+    
+    // Find the user with matching email
+    const user = allUsers.find((u: any) => u.email === data.email);
     
     // Simulate authentication
     setTimeout(() => {
       setIsLoading(false);
       
-      if (savedUser) {
-        const userData = JSON.parse(savedUser);
+      if (user) {
         toast.success("Successfully logged in!");
         // Set the current user
-        localStorage.setItem('currentUser', JSON.stringify(userData));
+        localStorage.setItem('currentUser', JSON.stringify(user));
         navigate('/feed');
       } else {
-        // For demo purposes, we'll go through profile creation
+        // For demo purposes, we'll go through profile creation if no registered user is found
         toast.success("First time login detected. Let's set up your profile!");
         onComplete({
           email: data.email,

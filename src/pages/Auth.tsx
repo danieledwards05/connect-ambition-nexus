@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Award } from "lucide-react";
 import AuthForm from "@/components/auth/AuthForm";
 import CompleteProfileForm from "@/components/auth/CompleteProfileForm";
@@ -7,6 +8,15 @@ import CompleteProfileForm from "@/components/auth/CompleteProfileForm";
 const Auth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
+  
+  // Check if user is already logged in
+  useEffect(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      navigate('/feed');
+    }
+  }, [navigate]);
   
   const handleAuthComplete = (userData) => {
     setUserData(userData);
