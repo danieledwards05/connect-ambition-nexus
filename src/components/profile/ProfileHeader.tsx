@@ -35,6 +35,7 @@ const ProfileHeader = ({ profile, isCurrentUser }: ProfileHeaderProps) => {
         coverUrl={profile.coverUrl}
         avatarUrl={profile.avatarUrl}
         name={profile.name}
+        isCurrentUser={isCurrentUser}
       />
       
       <CardContent className="pt-14">
