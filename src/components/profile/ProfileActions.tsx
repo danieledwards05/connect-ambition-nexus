@@ -1,18 +1,31 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Send, UserPlus } from "lucide-react";
+import { MessageCircle, Send, UserPlus, Settings } from "lucide-react";
 import { toast } from "sonner";
+import EditProfileDialog from "./EditProfileDialog";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileActionsProps {
   profileName: string;
-  profileId: string; // Add profileId prop
+  profileId: string;
   isCurrentUser: boolean;
   isStartup: boolean;
 }
 
 const ProfileActions = ({ profileName, profileId, isCurrentUser, isStartup }: ProfileActionsProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const navigate = useNavigate();
+  
+  // Get the current profile data
+  const getCurrentProfile = () => {
+    const currentUserJson = localStorage.getItem('currentUser');
+    if (currentUserJson) {
+      return JSON.parse(currentUserJson);
+    }
+    return null;
+  };
   
   // Check if current user is following this profile
   useEffect(() => {
@@ -106,8 +119,31 @@ const ProfileActions = ({ profileName, profileId, isCurrentUser, isStartup }: Pr
     toast.success("Message dialog opened");
   };
   
+  const handleEditProfile = () => {
+    setIsEditProfileOpen(true);
+  };
+  
+  const handleCloseEditProfile = () => {
+    setIsEditProfileOpen(false);
+    // Force refresh the profile page to show the updated data
+    navigate(0);
+  };
+  
   if (isCurrentUser) {
-    return <Button variant="outline" size="sm">Edit Profile</Button>;
+    return (
+      <>
+        <Button variant="outline" size="sm" onClick={handleEditProfile}>
+          <Settings size={16} className="mr-1" />
+          Edit Profile
+        </Button>
+        
+        <EditProfileDialog 
+          isOpen={isEditProfileOpen}
+          onClose={handleCloseEditProfile}
+          profile={getCurrentProfile()}
+        />
+      </>
+    );
   }
   
   return (

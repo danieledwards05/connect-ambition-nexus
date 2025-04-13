@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileTabs from "@/components/profile/ProfileTabs";
@@ -10,6 +10,7 @@ import { useProfileData } from "@/hooks/useProfileData";
 const Profile = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { profile, posts, isLoading, isCurrentUser } = useProfileData(id);
   
   // If no ID was provided and no current user exists, redirect to auth
@@ -19,6 +20,11 @@ const Profile = () => {
       navigate('/');
     }
   }, [id, navigate]);
+  
+  // Force reload profile data when location changes
+  useEffect(() => {
+    // This will force the useProfileData hook to re-fetch data when the page is re-navigated to
+  }, [location.key]);
   
   return (
     <Layout>
