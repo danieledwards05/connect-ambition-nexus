@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MessageList from "@/components/messages/MessageList";
 import MessageConversation from "@/components/messages/MessageConversation";
 import StartupInvitations from "@/components/messages/StartupInvitations";
-import { MessageCircle, Users, BellRing } from "lucide-react";
+import ApplicantsList from "@/components/messages/ApplicantsList";
+import { MessageCircle, Users, BellRing, UserCheck } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -31,7 +32,7 @@ const Messages = () => {
     const typeParam = params.get('type');
     const idParam = params.get('id');
     
-    if (typeParam && (typeParam === 'direct' || typeParam === 'startups' || typeParam === 'invitations')) {
+    if (typeParam && (typeParam === 'direct' || typeParam === 'startups' || typeParam === 'invitations' || typeParam === 'applicants')) {
       setActiveTab(typeParam);
     }
     
@@ -89,11 +90,16 @@ const Messages = () => {
                   <TabsTrigger value="invitations" className="flex items-center gap-2">
                     <BellRing size={16} /> Invitations
                   </TabsTrigger>
+                  {currentUser?.isStartup && (
+                    <TabsTrigger value="applicants" className="flex items-center gap-2">
+                      <UserCheck size={16} /> Applicants
+                    </TabsTrigger>
+                  )}
                 </TabsList>
               </div>
               
               <div className="flex flex-1 overflow-hidden">
-                <div className="w-1/3 border-r overflow-y-auto">
+                <div className={activeTab !== "applicants" ? "w-1/3 border-r overflow-y-auto" : ""}>
                   <TabsContent value="direct" className="m-0 h-full">
                     <MessageList 
                       chats={userChats} 
@@ -115,22 +121,25 @@ const Messages = () => {
                       invitations={startupInvitations}
                     />
                   </TabsContent>
+                  <TabsContent value="applicants" className="m-0 h-full w-full overflow-y-auto">
+                    <ApplicantsList startupName={currentUser?.name} />
+                  </TabsContent>
                 </div>
                 
-                <div className="w-2/3 flex flex-col">
-                  {selectedChat && (activeTab === "direct" || activeTab === "startups") ? (
+                {selectedChat && (activeTab === "direct" || activeTab === "startups") ? (
+                  <div className="w-2/3 flex flex-col">
                     <MessageConversation 
                       chatId={selectedChat} 
                       chatType={activeTab}
                     />
-                  ) : (
-                    <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                      {activeTab === "invitations" 
-                        ? "Select a startup invitation to respond" 
-                        : "Select a conversation to start messaging"}
-                    </div>
-                  )}
-                </div>
+                  </div>
+                ) : activeTab !== "applicants" && (
+                  <div className="w-2/3 flex-1 flex items-center justify-center text-muted-foreground">
+                    {activeTab === "invitations" 
+                      ? "Select a startup invitation to respond" 
+                      : "Select a conversation to start messaging"}
+                  </div>
+                )}
               </div>
             </Tabs>
           </Card>
