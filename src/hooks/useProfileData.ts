@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ProfileData } from "@/components/profile/ProfileHeader.types";
 import { Post } from "@/components/post/PostCard";
@@ -51,8 +52,23 @@ export const useProfileData = (id: string | undefined) => {
     
     // Otherwise, fetch the profile based on the ID
     setTimeout(() => {
-      // If the user is viewing someone else's profile but is logged in
-      // Set a default clean profile instead of using mock data with fake numbers
+      // Check if this user exists in registeredUsers
+      const registeredUsersJson = localStorage.getItem('registeredUsers');
+      if (registeredUsersJson && id) {
+        const registeredUsers = JSON.parse(registeredUsersJson);
+        const registeredUser = registeredUsers.find((user: any) => user.id === id);
+        
+        if (registeredUser) {
+          setProfile(registeredUser);
+          // Set posts for this user (empty for now)
+          setPosts([]);
+          setIsCurrentUser(false);
+          setIsLoading(false);
+          return;
+        }
+      }
+      
+      // If user not found in registered users, use mock data
       const baseProfile = id?.includes("startup") ? mockStartupProfile : mockProfileData;
       
       // Set the profile data - ensure it has the same ambitionScore as currentUser if available

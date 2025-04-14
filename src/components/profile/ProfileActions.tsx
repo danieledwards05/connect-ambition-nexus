@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Send, UserPlus, Settings } from "lucide-react";
@@ -123,10 +122,12 @@ const ProfileActions = ({ profileName, profileId, isCurrentUser, isStartup }: Pr
     setIsEditProfileOpen(true);
   };
   
-  const handleCloseEditProfile = () => {
+  const handleCloseEditProfile = (saved: boolean = false) => {
     setIsEditProfileOpen(false);
-    // Force refresh the profile page to show the updated data
-    navigate(0);
+    if (saved) {
+      // Force refresh the profile page to show the updated data
+      navigate(0);
+    }
   };
   
   if (isCurrentUser) {

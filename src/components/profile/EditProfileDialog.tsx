@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 interface EditProfileDialogProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (saved?: boolean) => void;
   profile: ProfileData;
 }
 
@@ -31,6 +31,9 @@ const EditProfileDialog = ({ isOpen, onClose, profile }: EditProfileDialogProps)
         year: profile.year || "",
         industry: profile.industry || "",
         mission: profile.mission || "",
+        tags: profile.tags || [],
+        avatarUrl: profile.avatarUrl || "",
+        coverUrl: profile.coverUrl || "",
       });
     }
   }, [isOpen, profile]);
@@ -63,12 +66,12 @@ const EditProfileDialog = ({ isOpen, onClose, profile }: EditProfileDialogProps)
       }
       
       toast.success("Profile updated successfully!");
-      onClose();
+      onClose(true);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
@@ -129,6 +132,28 @@ const EditProfileDialog = ({ isOpen, onClose, profile }: EditProfileDialogProps)
                 onChange={handleChange}
               />
             </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="avatarUrl">Profile Image URL</Label>
+              <Input
+                id="avatarUrl"
+                name="avatarUrl"
+                value={formData.avatarUrl || ""}
+                onChange={handleChange}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="coverUrl">Cover Image URL</Label>
+              <Input
+                id="coverUrl"
+                name="coverUrl"
+                value={formData.coverUrl || ""}
+                onChange={handleChange}
+                placeholder="https://example.com/cover.jpg"
+              />
+            </div>
             
             {profile.isStartup ? (
               <>
@@ -186,7 +211,7 @@ const EditProfileDialog = ({ isOpen, onClose, profile }: EditProfileDialogProps)
           </div>
           
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={() => onClose()}>
               Cancel
             </Button>
             <Button type="submit">Save Changes</Button>
